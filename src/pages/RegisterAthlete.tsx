@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
+import type { AthleteData } from "@/types/user";
 
 interface RegisterAthleteProps {
   onBack: () => void;
-  onComplete: () => void;
+  onComplete: (data: AthleteData) => void;
 }
 
 const CITIES = [
@@ -23,9 +24,7 @@ export default function RegisterAthlete({ onBack, onComplete }: RegisterAthleteP
   const handleCityChange = (val: string) => {
     setCity(val);
     if (val.length >= 1) {
-      const filtered = CITIES.filter((c) =>
-        c.toLowerCase().startsWith(val.toLowerCase())
-      );
+      const filtered = CITIES.filter((c) => c.toLowerCase().startsWith(val.toLowerCase()));
       setCitySuggestions(filtered);
       setShowSuggestions(filtered.length > 0);
     } else {
@@ -39,6 +38,11 @@ export default function RegisterAthlete({ onBack, onComplete }: RegisterAthleteP
   };
 
   const isValid = name.trim() && birthdate && gender && city.trim();
+
+  const handleSubmit = () => {
+    if (!isValid || !gender) return;
+    onComplete({ name: name.trim(), birthdate, gender, city: city.trim() });
+  };
 
   const inputCls =
     "w-full bg-card border border-border rounded-xl px-4 py-3 text-sm placeholder:text-dim focus:outline-none focus:border-aqua transition-colors";
@@ -54,10 +58,9 @@ export default function RegisterAthlete({ onBack, onComplete }: RegisterAthleteP
           Назад
         </button>
         <h1 className="font-display text-2xl md:text-3xl font-semibold">Расскажите о себе</h1>
-        <p className="text-dim text-sm mt-1">Роль: <span className="text-aqua">Спортсмен</span></p>
+        <p className="text-dim text-sm mt-1">Роль: <span className="text-sky-400">Спортсмен</span></p>
       </div>
 
-      {/* Имя */}
       <div className="space-y-1.5">
         <label className="text-xs text-dim">Как вас зовут <span className="text-red-400">*</span></label>
         <input
@@ -69,7 +72,6 @@ export default function RegisterAthlete({ onBack, onComplete }: RegisterAthleteP
         />
       </div>
 
-      {/* Дата рождения */}
       <div className="space-y-1.5">
         <label className="text-xs text-dim">Дата рождения <span className="text-red-400">*</span></label>
         <input
@@ -81,14 +83,10 @@ export default function RegisterAthlete({ onBack, onComplete }: RegisterAthleteP
         />
       </div>
 
-      {/* Пол */}
       <div className="space-y-1.5">
         <label className="text-xs text-dim">Пол <span className="text-red-400">*</span></label>
         <div className="flex gap-3">
-          {[
-            { id: "male", label: "Мужской" },
-            { id: "female", label: "Женский" },
-          ].map((g) => (
+          {[{ id: "male", label: "Мужской" }, { id: "female", label: "Женский" }].map((g) => (
             <button
               key={g.id}
               type="button"
@@ -105,7 +103,6 @@ export default function RegisterAthlete({ onBack, onComplete }: RegisterAthleteP
         </div>
       </div>
 
-      {/* Город */}
       <div className="space-y-1.5 relative">
         <label className="text-xs text-dim">Город проживания <span className="text-red-400">*</span></label>
         <input
@@ -134,7 +131,7 @@ export default function RegisterAthlete({ onBack, onComplete }: RegisterAthleteP
       </div>
 
       <button
-        onClick={onComplete}
+        onClick={handleSubmit}
         disabled={!isValid}
         className="w-full py-3 bg-aqua text-background rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
       >

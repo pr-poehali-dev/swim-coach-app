@@ -1,9 +1,11 @@
 import Icon from "@/components/ui/icon";
+import type { UserData } from "@/types/user";
 
 type Role = "athlete" | "coach";
 
 interface DashboardProps {
   role: Role;
+  user: UserData;
 }
 
 const weekDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
@@ -30,15 +32,22 @@ const coachStats = [
   { label: "Выручка", value: "₽186к", icon: "Banknote", trend: "+12%" },
 ];
 
-export default function Dashboard({ role }: DashboardProps) {
+export default function Dashboard({ role, user }: DashboardProps) {
   const totalWeekMeters = weekMeters.reduce((a, b) => a + b, 0);
+  const firstName = user.profile.name.split(" ")[0] || "Тренер";
 
   if (role === "coach") {
     return (
       <div className="p-4 md:p-8 space-y-4 animate-fade-in">
-        <div>
-          <p className="text-dim text-xs mb-1">Понедельник, 4 мая 2026</p>
-          <h1 className="font-display text-2xl md:text-3xl font-semibold">Кабинет тренера</h1>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-dim text-xs mb-1">Понедельник, 4 мая 2026</p>
+            <h1 className="font-display text-2xl md:text-3xl font-semibold">Привет, {firstName}</h1>
+          </div>
+          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-aqua text-background text-sm font-medium hover:opacity-90 transition-opacity shrink-0">
+            <Icon name="Users" size={15} />
+            Создать комьюнити
+          </button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {coachStats.map((s) => (
@@ -112,7 +121,7 @@ export default function Dashboard({ role }: DashboardProps) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-dim text-xs mb-1">Понедельник, 4 мая 2026</p>
-          <h1 className="font-display text-2xl md:text-3xl font-semibold">Привет, Алексей</h1>
+          <h1 className="font-display text-2xl md:text-3xl font-semibold">Привет, {firstName}</h1>
         </div>
         <div className="card-base px-3 py-1.5 flex items-center gap-1.5 shrink-0">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />

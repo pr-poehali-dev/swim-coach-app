@@ -8,19 +8,19 @@ import Groups from "@/pages/Groups";
 import Analytics from "@/pages/Analytics";
 import Profile from "@/pages/Profile";
 import LoginPage from "@/pages/LoginPage";
+import type { UserData } from "@/types/user";
 
 type Page = "dashboard" | "calendar" | "subscriptions" | "finance" | "groups" | "analytics" | "profile" | "login";
-type Role = "athlete" | "coach";
 
 export default function Index() {
   const [page, setPage] = useState<Page>("login");
-  const [role, setRole] = useState<Role>("athlete");
+  const [user, setUser] = useState<UserData | null>(null);
 
-  if (page === "login") {
+  if (page === "login" || !user) {
     return (
       <LoginPage
-        onLogin={(r: Role) => {
-          setRole(r);
+        onLogin={(data: UserData) => {
+          setUser(data);
           setPage("dashboard");
         }}
       />
@@ -29,14 +29,14 @@ export default function Index() {
 
   const renderPage = () => {
     switch (page) {
-      case "dashboard": return <Dashboard role={role} />;
+      case "dashboard": return <Dashboard role={user.role} user={user} />;
       case "calendar": return <CalendarPage />;
       case "subscriptions": return <Subscriptions />;
       case "finance": return <Finance />;
       case "groups": return <Groups />;
       case "analytics": return <Analytics />;
-      case "profile": return <Profile role={role} />;
-      default: return <Dashboard role={role} />;
+      case "profile": return <Profile role={user.role} user={user} />;
+      default: return <Dashboard role={user.role} user={user} />;
     }
   };
 
@@ -44,7 +44,7 @@ export default function Index() {
     <Layout
       currentPage={page}
       onNavigate={(p) => setPage(p as Page)}
-      role={role}
+      role={user.role}
     >
       {renderPage()}
     </Layout>
