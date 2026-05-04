@@ -74,45 +74,46 @@ export default function Groups() {
   const group = groups.find((g) => g.id === selectedGroup);
 
   return (
-    <div className="p-8 space-y-6 animate-fade-in">
+    <div className="p-4 md:p-8 space-y-4 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-dim text-sm mb-1">Управление</p>
-          <h1 className="font-display text-3xl font-semibold">Группы</h1>
+          <p className="text-dim text-xs mb-1">Управление</p>
+          <h1 className="font-display text-2xl md:text-3xl font-semibold">Группы</h1>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-aqua text-background rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
-          <Icon name="Plus" size={16} />
-          Создать группу
+        <button className="flex items-center gap-2 px-3 py-2 bg-aqua text-background rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+          <Icon name="Plus" size={15} />
+          <span className="hidden sm:inline">Создать</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* Group cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {groups.map((g) => (
           <button
             key={g.id}
             onClick={() => setSelectedGroup(g.id)}
-            className={`card-base p-5 text-left border-l-2 ${g.color} transition-all hover:bg-secondary ${selectedGroup === g.id ? "ring-1 ring-aqua/30" : ""}`}
+            className={`card-base p-4 text-left border-l-2 ${g.color} transition-all ${selectedGroup === g.id ? "ring-1 ring-aqua/30" : "hover:bg-secondary"}`}
           >
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-2">
               <div>
                 <p className="font-medium text-sm">{g.name}</p>
                 <p className="text-dim text-xs mt-0.5">{g.coach}</p>
               </div>
-              <span className={`text-xs px-2 py-1 rounded-md font-medium ${levelColors[g.level]}`}>
+              <span className={`text-xs px-2 py-0.5 rounded font-medium shrink-0 ml-2 ${levelColors[g.level]}`}>
                 {g.level}
               </span>
             </div>
-            <div className="flex items-center gap-4 text-xs text-dim mb-3">
+            <div className="flex items-center gap-3 text-xs text-dim mb-2 flex-wrap">
               <span className="flex items-center gap-1">
-                <Icon name="Users" size={12} />
+                <Icon name="Users" size={11} />
                 {g.count}/{g.maxCount}
               </span>
               <span className="flex items-center gap-1">
-                <Icon name="Activity" size={12} />
-                {g.attendance}% посещ.
+                <Icon name="Activity" size={11} />
+                {g.attendance}%
               </span>
               <span className="flex items-center gap-1">
-                <Icon name="Waves" size={12} />
+                <Icon name="Waves" size={11} />
                 {(g.weekLoad / 1000).toFixed(1)}к м/нед
               </span>
             </div>
@@ -123,74 +124,63 @@ export default function Groups() {
         ))}
       </div>
 
+      {/* Selected group detail */}
       {selectedGroup && group && (
-        <div className="grid grid-cols-3 gap-6 animate-fade-in">
-          {/* Group info */}
-          <div className="card-base p-6 space-y-4">
-            <p className="text-dim text-xs uppercase tracking-widest">О группе</p>
-            <div>
-              <p className="font-display text-lg font-semibold">{group.name}</p>
-              <p className="text-dim text-sm mt-0.5">{group.coach}</p>
+        <div className="space-y-3 animate-fade-in">
+          {/* Info */}
+          <div className="card-base p-4">
+            <p className="text-dim text-xs uppercase tracking-widest mb-3">О группе</p>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <p className="font-display text-base font-semibold">{group.name}</p>
+                <p className="text-dim text-sm">{group.coach}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-aqua font-display text-lg font-semibold">{group.attendance}%</p>
+                <p className="text-dim text-xs">посещаемость</p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <p className="text-xs text-dim uppercase tracking-widest">Расписание</p>
+            <div className="flex gap-2 overflow-x-auto pb-1">
               {group.schedule.map((s) => (
-                <div key={s} className="flex items-center gap-2 text-sm">
-                  <Icon name="Clock" size={14} className="text-aqua" />
-                  {s}
+                <div key={s} className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary rounded-lg shrink-0">
+                  <Icon name="Clock" size={12} className="text-aqua" />
+                  <span className="text-xs">{s}</span>
                 </div>
               ))}
-            </div>
-            <div className="space-y-3 pt-2 border-t border-border">
-              <div className="flex justify-between text-sm">
-                <span className="text-dim">Посещаемость</span>
-                <span className="font-medium text-emerald-400">{group.attendance}%</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-dim">Нагрузка/нед</span>
-                <span className="font-medium text-aqua">{(group.weekLoad / 1000).toFixed(1)}к м</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-dim">Наполнение</span>
-                <span className="font-medium">{group.count}/{group.maxCount}</span>
-              </div>
             </div>
           </div>
 
           {/* Athletes */}
-          <div className="col-span-2 card-base p-6">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-dim text-xs uppercase tracking-widest">Спортсмены группы</p>
-              <button className="flex items-center gap-1 text-xs text-aqua hover:opacity-80 transition-opacity">
-                <Icon name="UserPlus" size={14} />
+          <div className="card-base p-4">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-dim text-xs uppercase tracking-widest">Спортсмены</p>
+              <button className="flex items-center gap-1 text-xs text-aqua">
+                <Icon name="UserPlus" size={13} />
                 Добавить
               </button>
             </div>
             <div className="space-y-2">
               {groupAthletes.length === 0 && (
-                <div className="text-center py-8 text-dim text-sm">Спортсменов нет</div>
+                <div className="text-center py-6 text-dim text-sm">Спортсменов нет</div>
               )}
               {groupAthletes.map((a, idx) => (
-                <div key={a.id} className="flex items-center gap-4 p-4 bg-secondary rounded-xl hover:bg-muted transition-colors">
+                <div key={a.id} className="flex items-center gap-3 p-3 bg-secondary rounded-xl">
                   <span className="text-dim text-xs w-4">{idx + 1}</span>
-                  <div className="w-8 h-8 rounded-full bg-card flex items-center justify-center shrink-0">
-                    <span className="font-display text-sm font-semibold text-aqua">
+                  <div className="w-7 h-7 rounded-full bg-card flex items-center justify-center shrink-0">
+                    <span className="font-display text-xs font-semibold text-aqua">
                       {a.name.split(" ").map((w) => w[0]).join("")}
                     </span>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{a.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{a.name}</p>
                     <p className="text-xs text-dim">{a.style}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <p className="text-sm font-medium font-display text-aqua">
                       {(a.weekMeters / 1000).toFixed(1)}к м
                     </p>
                     <p className="text-xs text-dim">{a.visits} посещ.</p>
                   </div>
-                  <button className="text-dim hover:text-foreground transition-colors">
-                    <Icon name="ChevronRight" size={16} />
-                  </button>
                 </div>
               ))}
             </div>

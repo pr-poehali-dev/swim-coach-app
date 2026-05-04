@@ -46,21 +46,24 @@ const roleColors: Record<Role, string> = {
 export default function Layout({ children, currentPage, onNavigate, role, onRoleChange }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const filteredNav = navItems.filter((item) => item.roles.includes(role));
+  // На мобайле показываем максимум 5 пунктов в нижней панели
+  const mobileNav = filteredNav.slice(0, 5);
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      {/* Sidebar */}
+
+      {/* ── Desktop Sidebar ── */}
       <aside
-        className="flex flex-col border-r border-border transition-all duration-300 bg-card"
-        style={{ width: collapsed ? "64px" : "220px", minWidth: collapsed ? "64px" : "220px" }}
+        className="hidden md:flex flex-col border-r border-border transition-all duration-300 bg-card shrink-0"
+        style={{ width: collapsed ? "64px" : "220px" }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 h-16 border-b border-border shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-aqua flex items-center justify-center shrink-0">
-            <span className="text-background font-display font-bold text-sm">AT</span>
+        <div className="flex items-center gap-3 px-4 h-14 border-b border-border shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-aqua flex items-center justify-center shrink-0">
+            <span className="text-background font-display font-bold text-xs">AT</span>
           </div>
           {!collapsed && (
-            <span className="font-display font-semibold text-base tracking-wide text-foreground">
+            <span className="font-display font-semibold text-sm tracking-wide text-foreground">
               AquaTrack
             </span>
           )}
@@ -68,7 +71,7 @@ export default function Layout({ children, currentPage, onNavigate, role, onRole
             className="ml-auto text-muted-foreground hover:text-foreground transition-colors"
             onClick={() => setCollapsed(!collapsed)}
           >
-            <Icon name={collapsed ? "ChevronRight" : "ChevronLeft"} size={16} />
+            <Icon name={collapsed ? "ChevronRight" : "ChevronLeft"} size={15} />
           </button>
         </div>
 
@@ -104,7 +107,7 @@ export default function Layout({ children, currentPage, onNavigate, role, onRole
               className={`nav-item w-full ${currentPage === item.id ? "active" : "text-muted-foreground"} ${collapsed ? "justify-center px-0" : ""}`}
               title={collapsed ? item.label : ""}
             >
-              <Icon name={item.icon} size={18} fallback="Circle" />
+              <Icon name={item.icon} size={17} fallback="Circle" />
               {!collapsed && <span>{item.label}</span>}
             </button>
           ))}
@@ -116,16 +119,60 @@ export default function Layout({ children, currentPage, onNavigate, role, onRole
             onClick={() => onNavigate("login")}
             className={`nav-item w-full text-muted-foreground ${collapsed ? "justify-center px-0" : ""}`}
           >
-            <Icon name="LogOut" size={18} />
+            <Icon name="LogOut" size={17} />
             {!collapsed && <span>Выйти</span>}
           </button>
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
+      {/* ── Main content ── */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile top header */}
+        <header className="md:hidden flex items-center justify-between px-4 h-12 border-b border-border bg-card shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-aqua flex items-center justify-center">
+              <span className="text-background font-display font-bold text-xs">AT</span>
+            </div>
+            <span className="font-display font-semibold text-sm tracking-wide">AquaTrack</span>
+          </div>
+          <div className="flex gap-1">
+            {(["athlete", "coach", "admin"] as Role[]).map((r) => (
+              <button
+                key={r}
+                onClick={() => onRoleChange(r)}
+                className={`text-xs px-2 py-1 rounded transition-all ${
+                  role === r
+                    ? "bg-secondary " + roleColors[r]
+                    : "text-muted-foreground"
+                }`}
+              >
+                {r === "athlete" ? "СП" : r === "coach" ? "ТР" : "АД"}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        {/* Scrollable page content */}
+        <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
+          {children}
+        </main>
+
+        {/* Mobile bottom nav */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 flex">
+          {mobileNav.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onNavigate(item.id)}
+              className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${
+                currentPage === item.id ? "text-aqua" : "text-muted-foreground"
+              }`}
+            >
+              <Icon name={item.icon} size={20} fallback="Circle" />
+              <span className="text-[10px] leading-none">{item.label}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
     </div>
   );
 }

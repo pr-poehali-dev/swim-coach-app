@@ -11,9 +11,9 @@ const subscriptions = [
 ];
 
 const plans = [
-  { name: "Безлимит", price: "4 900 ₽", desc: "Неограниченные посещения", duration: "1 месяц", color: "border-aqua" },
-  { name: "10 занятий", price: "2 800 ₽", desc: "10 посещений, без срока", duration: "Без срока", color: "border-emerald-500" },
-  { name: "20 занятий", price: "4 200 ₽", desc: "20 посещений, без срока", duration: "Без срока", color: "border-violet-500" },
+  { name: "Безлимит", price: "4 900 ₽", desc: "Неограниченные посещения", color: "border-aqua" },
+  { name: "10 занятий", price: "2 800 ₽", desc: "10 посещений, без срока", color: "border-emerald-500" },
+  { name: "20 занятий", price: "4 200 ₽", desc: "20 посещений, без срока", color: "border-violet-500" },
 ];
 
 const statusConfig: Record<string, { label: string; color: string; dot: string }> = {
@@ -26,117 +26,108 @@ export default function Subscriptions() {
   const [filter, setFilter] = useState<"all" | "active" | "warning" | "expired">("all");
 
   const filtered = subscriptions.filter((s) => filter === "all" || s.status === filter);
-
   const activeCount = subscriptions.filter((s) => s.status === "active").length;
   const warningCount = subscriptions.filter((s) => s.status === "warning").length;
   const expiredCount = subscriptions.filter((s) => s.status === "expired").length;
 
   return (
-    <div className="p-8 space-y-6 animate-fade-in">
+    <div className="p-4 md:p-8 space-y-4 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-dim text-sm mb-1">Управление</p>
-          <h1 className="font-display text-3xl font-semibold">Абонементы</h1>
+          <p className="text-dim text-xs mb-1">Управление</p>
+          <h1 className="font-display text-2xl md:text-3xl font-semibold">Абонементы</h1>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-aqua text-background rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
-          <Icon name="Plus" size={16} />
-          Выдать абонемент
+        <button className="flex items-center gap-2 px-3 py-2 bg-aqua text-background rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+          <Icon name="Plus" size={15} />
+          <span className="hidden sm:inline">Выдать</span>
         </button>
       </div>
 
-      {/* Summary stats */}
-      <div className="grid grid-cols-4 gap-4">
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="stat-card">
-          <Icon name="CreditCard" size={18} className="text-dim" />
-          <p className="font-display text-2xl font-semibold mt-2">{subscriptions.length}</p>
-          <p className="text-dim text-xs">Всего абонементов</p>
+          <Icon name="CreditCard" size={16} className="text-dim" />
+          <p className="font-display text-xl font-semibold mt-2">{subscriptions.length}</p>
+          <p className="text-dim text-xs">Всего</p>
         </div>
         <div className="stat-card">
           <div className="w-2 h-2 rounded-full bg-emerald-400" />
-          <p className="font-display text-2xl font-semibold mt-2 text-emerald-400">{activeCount}</p>
+          <p className="font-display text-xl font-semibold mt-2 text-emerald-400">{activeCount}</p>
           <p className="text-dim text-xs">Активных</p>
         </div>
         <div className="stat-card">
           <div className="w-2 h-2 rounded-full bg-amber-400" />
-          <p className="font-display text-2xl font-semibold mt-2 text-amber-400">{warningCount}</p>
+          <p className="font-display text-xl font-semibold mt-2 text-amber-400">{warningCount}</p>
           <p className="text-dim text-xs">Заканчиваются</p>
         </div>
         <div className="stat-card">
           <div className="w-2 h-2 rounded-full bg-red-400" />
-          <p className="font-display text-2xl font-semibold mt-2 text-red-400">{expiredCount}</p>
+          <p className="font-display text-xl font-semibold mt-2 text-red-400">{expiredCount}</p>
           <p className="text-dim text-xs">Истекших</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        {/* Plans */}
-        <div className="space-y-3">
-          <p className="text-dim text-xs uppercase tracking-widest mb-3">Тарифы</p>
-          {plans.map((p) => (
-            <div key={p.name} className={`card-base p-5 border-l-2 ${p.color}`}>
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="font-display font-semibold text-base">{p.name}</p>
-                  <p className="text-dim text-xs mt-0.5">{p.desc}</p>
-                  <p className="text-dim text-xs">{p.duration}</p>
+      {/* Plans — horizontal scroll on mobile */}
+      <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3">
+        {plans.map((p) => (
+          <div key={p.name} className={`card-base p-4 border-l-2 ${p.color} shrink-0 w-52 md:w-auto`}>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="font-display font-semibold text-sm">{p.name}</p>
+                <p className="text-dim text-xs mt-0.5">{p.desc}</p>
+              </div>
+              <p className="font-display text-lg font-semibold text-aqua whitespace-nowrap">{p.price}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {(["all", "active", "warning", "expired"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all shrink-0 ${
+              filter === f ? "bg-aqua text-background" : "bg-secondary text-muted-foreground"
+            }`}
+          >
+            {f === "all" ? "Все" : f === "active" ? "Активные" : f === "warning" ? "Заканчиваются" : "Истекшие"}
+          </button>
+        ))}
+      </div>
+
+      {/* List */}
+      <div className="card-base p-4 space-y-2">
+        {filtered.map((s) => {
+          const sc = statusConfig[s.status];
+          const pct = s.maxVisits ? (s.visits / s.maxVisits) * 100 : null;
+          return (
+            <div key={s.id} className="flex items-center gap-3 p-3 bg-secondary rounded-xl">
+              <div className="w-8 h-8 rounded-full bg-card flex items-center justify-center shrink-0">
+                <span className="font-display text-xs font-semibold text-aqua">
+                  {s.name.split(" ").map((w) => w[0]).join("")}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{s.name}</p>
+                <p className="text-xs text-dim">{s.plan} · {s.expires}</p>
+                {pct !== null && (
+                  <div className="progress-bar mt-1" style={{ width: "100px" }}>
+                    <div className="progress-fill" style={{ width: `${pct}%` }} />
+                  </div>
+                )}
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-xs font-medium">{s.maxVisits ? `${s.visits}/${s.maxVisits}` : `${s.visits}×`}</p>
+                <div className="flex items-center gap-1 justify-end mt-0.5">
+                  <div className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />
+                  <span className={`text-xs ${sc.color}`}>{sc.label}</span>
                 </div>
-                <p className="font-display text-xl font-semibold text-aqua">{p.price}</p>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Table */}
-        <div className="col-span-2 card-base p-6">
-          <div className="flex items-center gap-2 mb-5">
-            {(["all", "active", "warning", "expired"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  filter === f ? "bg-aqua text-background" : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {f === "all" ? "Все" : f === "active" ? "Активные" : f === "warning" ? "Заканчиваются" : "Истекшие"}
-              </button>
-            ))}
-          </div>
-
-          <div className="space-y-2">
-            {filtered.map((s) => {
-              const sc = statusConfig[s.status];
-              const pct = s.maxVisits ? (s.visits / s.maxVisits) * 100 : null;
-              return (
-                <div key={s.id} className="flex items-center gap-4 p-4 bg-secondary rounded-xl hover:bg-muted transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-card flex items-center justify-center shrink-0">
-                    <span className="font-display text-sm font-semibold text-aqua">
-                      {s.name.split(" ").map((w) => w[0]).join("")}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{s.name}</p>
-                    <p className="text-xs text-dim">{s.plan} · до {s.expires}</p>
-                    {pct !== null && (
-                      <div className="progress-bar mt-1.5" style={{ width: "120px" }}>
-                        <div className="progress-fill" style={{ width: `${pct}%` }} />
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-sm font-medium">{s.maxVisits ? `${s.visits}/${s.maxVisits}` : `${s.visits} посещ.`}</p>
-                    <div className="flex items-center gap-1 justify-end mt-0.5">
-                      <div className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />
-                      <span className={`text-xs ${sc.color}`}>{sc.label}</span>
-                    </div>
-                  </div>
-                  <button className="text-dim hover:text-foreground transition-colors">
-                    <Icon name="MoreHorizontal" size={16} />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+          );
+        })}
       </div>
     </div>
   );
