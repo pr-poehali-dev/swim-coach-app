@@ -45,7 +45,6 @@ export default function Index() {
       currentPage={page}
       onNavigate={(p) => setPage(p as Page)}
       role={role}
-      onRoleChange={(r) => setRole(r)}
     >
       {renderPage()}
     </Layout>

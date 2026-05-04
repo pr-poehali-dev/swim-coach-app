@@ -18,7 +18,6 @@ interface LayoutProps {
   currentPage: Page;
   onNavigate: (page: Page) => void;
   role: Role;
-  onRoleChange: (role: Role) => void;
 }
 
 const navItems: { id: Page; label: string; icon: string; roles: Role[] }[] = [
@@ -43,7 +42,7 @@ const roleColors: Record<Role, string> = {
   admin: "text-amber-400",
 };
 
-export default function Layout({ children, currentPage, onNavigate, role, onRoleChange }: LayoutProps) {
+export default function Layout({ children, currentPage, onNavigate, role }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const filteredNav = navItems.filter((item) => item.roles.includes(role));
   // На мобайле показываем максимум 5 пунктов в нижней панели
@@ -79,22 +78,7 @@ export default function Layout({ children, currentPage, onNavigate, role, onRole
         {!collapsed && (
           <div className="px-4 py-3 border-b border-border">
             <p className="text-xs text-dim mb-1">Роль</p>
-            <div className="flex gap-1">
-              {(["athlete", "coach", "admin"] as Role[]).map((r) => (
-                <button
-                  key={r}
-                  onClick={() => onRoleChange(r)}
-                  className={`text-xs px-2 py-1 rounded transition-all ${
-                    role === r
-                      ? "bg-secondary " + roleColors[r]
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {r === "athlete" ? "СП" : r === "coach" ? "ТР" : "АД"}
-                </button>
-              ))}
-            </div>
-            <p className={`text-xs font-medium mt-1 ${roleColors[role]}`}>{roleLabels[role]}</p>
+            <p className={`text-xs font-medium ${roleColors[role]}`}>{roleLabels[role]}</p>
           </div>
         )}
 
@@ -135,21 +119,7 @@ export default function Layout({ children, currentPage, onNavigate, role, onRole
             </div>
             <span className="font-display font-semibold text-sm tracking-wide">AquaTrack</span>
           </div>
-          <div className="flex gap-1">
-            {(["athlete", "coach", "admin"] as Role[]).map((r) => (
-              <button
-                key={r}
-                onClick={() => onRoleChange(r)}
-                className={`text-xs px-2 py-1 rounded transition-all ${
-                  role === r
-                    ? "bg-secondary " + roleColors[r]
-                    : "text-muted-foreground"
-                }`}
-              >
-                {r === "athlete" ? "СП" : r === "coach" ? "ТР" : "АД"}
-              </button>
-            ))}
-          </div>
+          <span className={`text-xs font-medium ${roleColors[role]}`}>{roleLabels[role]}</span>
         </header>
 
         {/* Scrollable page content */}
