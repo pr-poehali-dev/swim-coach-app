@@ -10,7 +10,7 @@ import Profile from "@/pages/Profile";
 import LoginPage from "@/pages/LoginPage";
 
 type Page = "dashboard" | "calendar" | "subscriptions" | "finance" | "groups" | "analytics" | "profile" | "login";
-type Role = "athlete" | "coach" | "admin";
+type Role = "athlete" | "coach";
 
 export default function Index() {
   const [page, setPage] = useState<Page>("login");

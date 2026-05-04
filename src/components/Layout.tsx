@@ -11,7 +11,7 @@ type Page =
   | "profile"
   | "login";
 
-type Role = "athlete" | "coach" | "admin";
+type Role = "athlete" | "coach";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,31 +21,28 @@ interface LayoutProps {
 }
 
 const navItems: { id: Page; label: string; icon: string; roles: Role[] }[] = [
-  { id: "dashboard", label: "Дашборд", icon: "LayoutDashboard", roles: ["athlete", "coach", "admin"] },
-  { id: "calendar", label: "Календарь", icon: "CalendarDays", roles: ["athlete", "coach", "admin"] },
-  { id: "subscriptions", label: "Абонементы", icon: "CreditCard", roles: ["athlete", "coach", "admin"] },
-  { id: "groups", label: "Группы", icon: "Users", roles: ["coach", "admin"] },
-  { id: "analytics", label: "Аналитика", icon: "BarChart3", roles: ["athlete", "coach", "admin"] },
-  { id: "finance", label: "Финансы", icon: "TrendingUp", roles: ["admin"] },
-  { id: "profile", label: "Профиль", icon: "UserCircle", roles: ["athlete", "coach", "admin"] },
+  { id: "dashboard", label: "Дашборд", icon: "LayoutDashboard", roles: ["athlete", "coach"] },
+  { id: "calendar", label: "Календарь", icon: "CalendarDays", roles: ["athlete", "coach"] },
+  { id: "subscriptions", label: "Абонементы", icon: "CreditCard", roles: ["athlete", "coach"] },
+  { id: "groups", label: "Группы", icon: "Users", roles: ["coach"] },
+  { id: "analytics", label: "Аналитика", icon: "BarChart3", roles: ["athlete", "coach"] },
+  { id: "finance", label: "Финансы", icon: "TrendingUp", roles: ["coach"] },
+  { id: "profile", label: "Профиль", icon: "UserCircle", roles: ["athlete", "coach"] },
 ];
 
 const roleLabels: Record<Role, string> = {
   athlete: "Спортсмен",
   coach: "Тренер",
-  admin: "Администратор",
 };
 
 const roleColors: Record<Role, string> = {
   athlete: "text-sky-400",
   coach: "text-emerald-400",
-  admin: "text-amber-400",
 };
 
 export default function Layout({ children, currentPage, onNavigate, role }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const filteredNav = navItems.filter((item) => item.roles.includes(role));
-  // На мобайле показываем максимум 5 пунктов в нижней панели
   const mobileNav = filteredNav.slice(0, 5);
 
   return (
@@ -119,7 +116,9 @@ export default function Layout({ children, currentPage, onNavigate, role }: Layo
             </div>
             <span className="font-display font-semibold text-sm tracking-wide">AquaTrack</span>
           </div>
-          <span className={`text-xs font-medium ${roleColors[role]}`}>{roleLabels[role]}</span>
+          <span className={`text-xs font-medium px-2 py-1 rounded bg-secondary ${roleColors[role]}`}>
+            {roleLabels[role]}
+          </span>
         </header>
 
         {/* Scrollable page content */}

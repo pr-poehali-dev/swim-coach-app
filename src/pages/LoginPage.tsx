@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
 
-type Role = "athlete" | "coach" | "admin";
+type Role = "athlete" | "coach";
 
 interface LoginPageProps {
   onLogin: (role: Role) => void;
@@ -9,8 +9,7 @@ interface LoginPageProps {
 
 const roles: { id: Role; label: string; desc: string; icon: string }[] = [
   { id: "athlete", label: "Спортсмен", desc: "Тренировки, прогресс, расписание", icon: "Waves" },
-  { id: "coach", label: "Тренер", desc: "Группы, занятия, статистика", icon: "UserCheck" },
-  { id: "admin", label: "Администратор", desc: "Управление клубом и финансами", icon: "LayoutDashboard" },
+  { id: "coach", label: "Тренер", desc: "Группы, финансы, абонементы, статистика", icon: "UserCheck" },
 ];
 
 export default function LoginPage({ onLogin }: LoginPageProps) {
@@ -40,9 +39,9 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
         <div className="space-y-5">
           <div>
             <h2 className="font-display text-2xl font-semibold leading-tight">
-              Платформа управления<br />спортивной секцией
+              Платформа для частных<br />тренеров и спортсменов
             </h2>
-            <p className="text-dim text-sm mt-3">Всё для тренеров, спортсменов и руководства.</p>
+            <p className="text-dim text-sm mt-3">Всё необходимое — в одном приложении.</p>
           </div>
           <div className="space-y-2.5">
             {[

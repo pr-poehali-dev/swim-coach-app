@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
 
-type Role = "athlete" | "coach" | "admin";
+type Role = "athlete" | "coach";
 
 interface ProfileProps {
   role: Role;

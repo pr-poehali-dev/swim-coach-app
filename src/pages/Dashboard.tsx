@@ -1,6 +1,6 @@
 import Icon from "@/components/ui/icon";
 
-type Role = "athlete" | "coach" | "admin";
+type Role = "athlete" | "coach";
 
 interface DashboardProps {
   role: Role;
@@ -23,90 +23,15 @@ const upcomingTrainings = [
   { time: "18:00", title: "Интенсив", coach: "Иванов А.В.", lane: "Дорожка 5" },
 ];
 
-const adminStats = [
-  { label: "Спортсменов", value: "124", icon: "Users", trend: "+3" },
-  { label: "Тренеров", value: "8", icon: "UserCheck", trend: "0" },
-  { label: "Групп", value: "12", icon: "Layers", trend: "+1" },
-  { label: "Выручка", value: "₽186к", icon: "Banknote", trend: "+12%" },
-];
-
 const coachStats = [
-  { label: "Мои группы", value: "4", icon: "Users" },
-  { label: "Трен./нед.", value: "18", icon: "CalendarDays" },
-  { label: "Спортсменов", value: "34", icon: "UserCheck" },
-  { label: "Посещ.", value: "87%", icon: "TrendingUp" },
+  { label: "Мои группы", value: "4", icon: "Users", trend: "+1" },
+  { label: "Трен./нед.", value: "18", icon: "CalendarDays", trend: "0" },
+  { label: "Спортсменов", value: "34", icon: "UserCheck", trend: "+3" },
+  { label: "Выручка", value: "₽186к", icon: "Banknote", trend: "+12%" },
 ];
 
 export default function Dashboard({ role }: DashboardProps) {
   const totalWeekMeters = weekMeters.reduce((a, b) => a + b, 0);
-
-  if (role === "admin") {
-    return (
-      <div className="p-4 md:p-8 space-y-4 animate-fade-in">
-        <div>
-          <p className="text-dim text-xs mb-1">Понедельник, 4 мая 2026</p>
-          <h1 className="font-display text-2xl md:text-3xl font-semibold">Обзор платформы</h1>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {adminStats.map((s) => (
-            <div key={s.label} className="stat-card">
-              <div className="flex items-center justify-between">
-                <Icon name={s.icon} size={16} fallback="Circle" className="text-dim" />
-                <span className={`text-xs font-medium ${s.trend.startsWith("+") ? "text-emerald-400" : "text-dim"}`}>
-                  {s.trend}
-                </span>
-              </div>
-              <p className="font-display text-xl md:text-2xl font-semibold mt-2">{s.value}</p>
-              <p className="text-dim text-xs">{s.label}</p>
-            </div>
-          ))}
-        </div>
-        <div className="card-base p-4 md:p-6">
-          <p className="text-dim text-xs mb-4 uppercase tracking-widest">Посещаемость, эта неделя</p>
-          <div className="flex items-end gap-2 h-28">
-            {weekDays.map((d, i) => {
-              const pct = (weekMeters[i] / maxMeters) * 100;
-              return (
-                <div key={d} className="flex flex-col items-center gap-1 flex-1">
-                  <div className="w-full flex items-end" style={{ height: "80px" }}>
-                    <div
-                      className="w-full rounded-t transition-all duration-700"
-                      style={{
-                        height: `${pct}%`,
-                        background: weekMeters[i] > 0
-                          ? "linear-gradient(180deg, hsl(199,89%,52%), hsl(199,60%,35%))"
-                          : "hsl(var(--secondary))",
-                      }}
-                    />
-                  </div>
-                  <span className="text-dim text-xs">{d}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div className="card-base p-4">
-          <p className="text-dim text-xs mb-3 uppercase tracking-widest">Быстрые действия</p>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { icon: "UserPlus", label: "Добавить спортсмена" },
-              { icon: "Calendar", label: "Создать тренировку" },
-              { icon: "CreditCard", label: "Выдать абонемент" },
-              { icon: "FileText", label: "Финансовый отчёт" },
-            ].map((a) => (
-              <button
-                key={a.label}
-                className="flex items-center gap-2 p-3 rounded-lg bg-secondary hover:bg-muted transition-colors text-left"
-              >
-                <Icon name={a.icon} size={14} fallback="Circle" className="text-aqua shrink-0" />
-                <span className="text-xs leading-tight">{a.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (role === "coach") {
     return (
@@ -118,7 +43,10 @@ export default function Dashboard({ role }: DashboardProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {coachStats.map((s) => (
             <div key={s.label} className="stat-card">
-              <Icon name={s.icon} size={16} fallback="Circle" className="text-dim" />
+              <div className="flex items-center justify-between">
+                <Icon name={s.icon} size={16} fallback="Circle" className="text-dim" />
+                <span className={`text-xs font-medium ${s.trend.startsWith("+") ? "text-emerald-400" : "text-dim"}`}>{s.trend}</span>
+              </div>
               <p className="font-display text-xl md:text-2xl font-semibold mt-2">{s.value}</p>
               <p className="text-dim text-xs">{s.label}</p>
             </div>
@@ -156,6 +84,22 @@ export default function Dashboard({ role }: DashboardProps) {
                   <div className="progress-fill" style={{ width: `${g.pct}%` }} />
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+        <div className="card-base p-4">
+          <p className="text-dim text-xs mb-3 uppercase tracking-widest">Быстрые действия</p>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { icon: "UserPlus", label: "Добавить спортсмена" },
+              { icon: "Calendar", label: "Создать тренировку" },
+              { icon: "CreditCard", label: "Выдать абонемент" },
+              { icon: "FileText", label: "Финансовый отчёт" },
+            ].map((a) => (
+              <button key={a.label} className="flex items-center gap-2 p-3 rounded-lg bg-secondary hover:bg-muted transition-colors text-left">
+                <Icon name={a.icon} size={14} fallback="Circle" className="text-aqua shrink-0" />
+                <span className="text-xs leading-tight">{a.label}</span>
+              </button>
             ))}
           </div>
         </div>
