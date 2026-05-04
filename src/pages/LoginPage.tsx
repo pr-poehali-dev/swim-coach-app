@@ -1,7 +1,11 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
+import RegisterAthlete from "@/pages/RegisterAthlete";
+import RegisterCoach from "@/pages/RegisterCoach";
 
 type Role = "athlete" | "coach";
+type Step = "role" | "auth" | "register-profile";
+type AuthMode = "login" | "register";
 
 interface LoginPageProps {
   onLogin: (role: Role) => void;
@@ -12,15 +16,38 @@ const roles: { id: Role; label: string; desc: string; icon: string }[] = [
   { id: "coach", label: "Тренер", desc: "Группы, финансы, абонементы, статистика", icon: "UserCheck" },
 ];
 
+const roleColors: Record<Role, string> = {
+  athlete: "text-sky-400",
+  coach: "text-emerald-400",
+};
+
 export default function LoginPage({ onLogin }: LoginPageProps) {
   const [selectedRole, setSelectedRole] = useState<Role>("athlete");
-  const [step, setStep] = useState<"role" | "form">("role");
+  const [step, setStep] = useState<Step>("role");
+  const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const inputCls =
+    "w-full bg-card border border-border rounded-xl px-4 py-3 text-sm placeholder:text-dim focus:outline-none focus:border-aqua transition-colors";
+
+  const handleContinueToAuth = () => {
+    setStep("auth");
+    setAuthMode("login");
+  };
+
+  const handleRegister = () => {
+    setStep("register-profile");
+  };
+
+  const handleProfileComplete = () => {
+    onLogin(selectedRole);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
-      {/* Top logo bar (mobile) */}
+      {/* Mobile logo */}
       <div className="md:hidden flex items-center gap-3 px-5 pt-8 pb-4">
         <div className="w-8 h-8 rounded-xl bg-aqua flex items-center justify-center">
           <span className="font-display font-bold text-background text-sm">AT</span>
@@ -60,11 +87,13 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
         <p className="text-xs text-dim">© 2026 AquaTrack</p>
       </div>
 
-      {/* Right / main panel */}
-      <div className="flex-1 flex items-start md:items-center justify-center px-5 py-4 md:p-8">
-        <div className="w-full max-w-md space-y-6 animate-fade-in">
-          {step === "role" ? (
-            <>
+      {/* Right panel */}
+      <div className="flex-1 flex items-start md:items-center justify-center px-5 py-4 md:p-8 overflow-y-auto">
+        <div className="w-full max-w-md py-4 space-y-6">
+
+          {/* Шаг 1: Выбор роли */}
+          {step === "role" && (
+            <div className="space-y-6 animate-fade-in">
               <div>
                 <h1 className="font-display text-2xl md:text-3xl font-semibold">Войти в систему</h1>
                 <p className="text-dim text-sm mt-1">Выберите свою роль</p>
@@ -96,14 +125,17 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                 ))}
               </div>
               <button
-                onClick={() => setStep("form")}
+                onClick={handleContinueToAuth}
                 className="w-full py-3 bg-aqua text-background rounded-xl font-medium text-sm hover:opacity-90 transition-opacity"
               >
                 Продолжить
               </button>
-            </>
-          ) : (
-            <>
+            </div>
+          )}
+
+          {/* Шаг 2: Вход / Регистрация (email + пароль) */}
+          {step === "auth" && (
+            <div className="space-y-6 animate-fade-in">
               <div>
                 <button
                   onClick={() => setStep("role")}
@@ -112,11 +144,41 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                   <Icon name="ChevronLeft" size={14} />
                   Назад
                 </button>
-                <h1 className="font-display text-2xl md:text-3xl font-semibold">Вход</h1>
+                <h1 className="font-display text-2xl md:text-3xl font-semibold">
+                  {authMode === "login" ? "Вход" : "Регистрация"}
+                </h1>
                 <p className="text-dim text-sm mt-1">
-                  Роль: <span className="text-aqua">{roles.find((r) => r.id === selectedRole)?.label}</span>
+                  Роль:{" "}
+                  <span className={roleColors[selectedRole]}>
+                    {roles.find((r) => r.id === selectedRole)?.label}
+                  </span>
                 </p>
               </div>
+
+              {/* Переключатель вход/регистрация */}
+              <div className="flex bg-secondary rounded-xl p-1">
+                <button
+                  onClick={() => setAuthMode("login")}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+                    authMode === "login"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-dim hover:text-foreground"
+                  }`}
+                >
+                  Войти
+                </button>
+                <button
+                  onClick={() => setAuthMode("register")}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+                    authMode === "register"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-dim hover:text-foreground"
+                  }`}
+                >
+                  Зарегистрироваться
+                </button>
+              </div>
+
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <label className="text-xs text-dim">Email</label>
@@ -125,39 +187,74 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm placeholder:text-dim focus:outline-none focus:border-aqua transition-colors"
+                    className={inputCls}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs text-dim">Пароль</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm placeholder:text-dim focus:outline-none focus:border-aqua transition-colors"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className={inputCls + " pr-11"}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-dim hover:text-foreground transition-colors"
+                    >
+                      <Icon name={showPassword ? "EyeOff" : "Eye"} size={16} />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-xs">
-                  <label className="flex items-center gap-2 text-dim cursor-pointer">
-                    <input type="checkbox" className="accent-aqua" />
-                    Запомнить меня
-                  </label>
-                  <button className="text-aqua hover:opacity-80">Забыли пароль?</button>
-                </div>
+                {authMode === "login" && (
+                  <div className="flex items-center justify-between text-xs">
+                    <label className="flex items-center gap-2 text-dim cursor-pointer">
+                      <input type="checkbox" className="accent-aqua" />
+                      Запомнить меня
+                    </label>
+                    <button className="text-aqua hover:opacity-80">Забыли пароль?</button>
+                  </div>
+                )}
               </div>
-              <button
-                onClick={() => onLogin(selectedRole)}
-                className="w-full py-3 bg-aqua text-background rounded-xl font-medium text-sm hover:opacity-90 transition-opacity"
-              >
-                Войти
-              </button>
-              <p className="text-center text-xs text-dim">
-                Нет аккаунта?{" "}
-                <button className="text-aqua hover:opacity-80">Зарегистрироваться</button>
-              </p>
-            </>
+
+              {authMode === "login" ? (
+                <button
+                  onClick={() => onLogin(selectedRole)}
+                  disabled={!email || !password}
+                  className="w-full py-3 bg-aqua text-background rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Войти
+                </button>
+              ) : (
+                <button
+                  onClick={handleRegister}
+                  disabled={!email || !password}
+                  className="w-full py-3 bg-aqua text-background rounded-xl font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Продолжить
+                </button>
+              )}
+            </div>
           )}
+
+          {/* Шаг 3: Профиль (индивидуальные поля) */}
+          {step === "register-profile" && (
+            selectedRole === "athlete" ? (
+              <RegisterAthlete
+                onBack={() => setStep("auth")}
+                onComplete={handleProfileComplete}
+              />
+            ) : (
+              <RegisterCoach
+                onBack={() => setStep("auth")}
+                onComplete={handleProfileComplete}
+              />
+            )
+          )}
+
         </div>
       </div>
     </div>
